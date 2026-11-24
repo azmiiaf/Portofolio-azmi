@@ -82,7 +82,7 @@ export const experience = [
     role: "S1 Informatika",
     org: "UBHARA Jaya",
     date: "2026",
-    description: "Lulus Tepat waktu dalam keadaan S.Kom.",
+    description: "Lulus Tepat waktu dengan gelar S.Kom.",
   },
 ]
 
