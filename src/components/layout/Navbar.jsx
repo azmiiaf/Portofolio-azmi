@@ -122,13 +122,13 @@ export default function Navbar() {
           {navLinks.map((l) => (
             <a key={l.href} href={l.href} onClick={anchorClick} className="transition-colors hover:text-lime">{l.label}</a>
           ))}
-          <button 
+          {/* <button 
             onClick={logout} 
             disabled={loading}
             className="rounded-full border border-white/30 px-4 py-1 text-paper transition-colors hover:border-lime hover:text-lime disabled:opacity-50"
           >
             {loading ? "Memproses..." : "Keluar"}
-          </button>
+          </button>*/}
         </nav>
 
         <button onClick={() => setOpen(!open)} className="px-2 py-2 font-mono text-sm lg:hidden">{open ? 'Tutup' : 'Menu'}</button>
