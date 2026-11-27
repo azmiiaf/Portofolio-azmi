@@ -1,3 +1,5 @@
+'use client'
+import { useVisitorLog } from '@/hooks/useVisitorLog'
 import { IntroProvider } from '../components/layout/Intro'
 import ScrollProgress from '../components/layout/ScrollProgress'
 import Navbar from '../components/layout/Navbar'
@@ -11,9 +13,15 @@ import Certificates from '../components/sections/Certificates'
 import Motto from '../components/sections/Motto'
 import Contact from '../components/sections/Contact'
 
+function VisitorTracker() {
+  useVisitorLog()
+  return null
+}
+
 export default function Home() {
   return (
     <IntroProvider>
+      <VisitorTracker />
       <ScrollProgress />
       <Navbar />
       <main>

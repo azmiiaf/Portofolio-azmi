@@ -14,5 +14,10 @@ body { background: #0a0a0a; color: #f4f4f0; overflow-x: hidden; }
 .outline-lime { -webkit-text-stroke: 1.5px #b6f500; color: transparent; }
 .outline-ink { -webkit-text-stroke: 1.5px #0a0a0a; color: transparent; }
 
-@media (hover: hover) and (pointer: fine) { body, a, button { cursor: none; } }
+/* Admin area: pakai cursor default (bukan custom cursor) */
+.admin-no-custom-cursor *, [data-admin] * { cursor: auto; }
+[data-admin] a[href], [data-admin] button:not(:disabled), [data-admin] [role="button"] { cursor: pointer; }
+[data-admin] button:disabled { cursor: not-allowed; }
+
+@media (hover: hover) and (pointer: fine) { body:not([data-admin] *), a:not([data-admin] *), button:not([data-admin] *) { cursor: none; } }
 @media (prefers-reduced-motion: reduce) { * { animation-duration: .01ms !important; } }

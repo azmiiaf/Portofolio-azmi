@@ -1,2 +1,4 @@
-// Nama cookie login. Dipakai di middleware dan route handler.
+// Nama cookie login portfolio
 export const COOKIE_NAME = 'token'
+// Nama cookie admin
+export const ADMIN_COOKIE = 'admin_token'
