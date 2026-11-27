@@ -8,8 +8,8 @@ import { cookies } from 'next/headers'
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET || 'admin-secret-change-me'
 
-async function checkAdmin() {
-  const cookieStore = await cookies()
+function checkAdmin() {
+  const cookieStore = cookies()
   const token = cookieStore.get(ADMIN_COOKIE)?.value
   return token === ADMIN_SECRET
 }
@@ -17,7 +17,7 @@ async function checkAdmin() {
 const ALLOWED_TABLES = ['profile', 'education', 'certification', 'project', 'experience', 'contact']
 
 export async function GET(req) {
-  if (!await checkAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!checkAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { searchParams } = new URL(req.url)
   const table = searchParams.get('table')
   if (!ALLOWED_TABLES.includes(table)) return NextResponse.json({ error: 'Invalid table' }, { status: 400 })
