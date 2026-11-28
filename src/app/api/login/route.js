@@ -1,46 +1,73 @@
 import { NextResponse } from 'next/server'
-import { COOKIE_NAME } from '../../../lib/auth'
+import { COOKIE_NAME, ADMIN_COOKIE } from '@/lib/auth'
+import { supabase } from '@/lib/supabase'
 
 export async function POST(req) {
-  const { username, password } = await req.json()
-
-  if (!username || !password) {
-    return NextResponse.json({ message: 'Username dan password wajib diisi' }, { status: 400 })
-  }
-
-  // 1. Kirim ke API (URL & path diambil dari .env.local)
-  let res
   try {
-    res = await fetch(`${process.env.API_URL}${process.env.PATH_LOGIN}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(process.env.API_KEY && { 'x-api-key': process.env.API_KEY }),
-      },
-      body: JSON.stringify({ username, password }),
-      cache: 'no-store',
+    const body = await req.json()
+    const email = (body.email || body.username || '').trim()
+    const password = body.password || ''
+
+    if (!email || !password) {
+      return NextResponse.json({ message: 'Email dan password wajib diisi' }, { status: 400 })
+    }
+
+    // Login via Supabase Auth
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     })
-  } catch {
-    return NextResponse.json({ message: 'Tidak bisa menghubungi server API' }, { status: 502 })
+
+    if (error || !data?.session) {
+      return NextResponse.json(
+        {
+          message:
+            error?.message === 'Invalid login credentials'
+              ? 'Email atau password salah'
+              : (error?.message || 'Gagal login ke akun Supabase'),
+        },
+        { status: 401 }
+      )
+    }
+
+    const token = data.session.access_token
+    const userEmail = data.user.email || email
+
+    const response = NextResponse.json({
+      message: 'Berhasil login',
+      user: { email: userEmail, id: data.user.id },
+    })
+
+    // Cookie token untuk akses portfolio
+    response.cookies.set(COOKIE_NAME, token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7, // 7 hari
+    })
+
+    // Cookie admin_token agar bisa akses /admin secara otomatis
+    const adminSecret = process.env.ADMIN_SECRET || 'admin-secret-change-me'
+    response.cookies.set(ADMIN_COOKIE, adminSecret, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+    })
+
+    // Simpan email user untuk sidebar admin
+    response.cookies.set('admin_email', userEmail, {
+      httpOnly: false,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+    })
+
+    return response
+  } catch (err) {
+    return NextResponse.json({ message: 'Terjadi kesalahan server: ' + err.message }, { status: 500 })
   }
-
-  const data = await res.json().catch(() => ({}))
-
-  // 2. Gagal login
-  if (!res.ok) {
-    return NextResponse.json({ message: data.message || 'Username atau password salah' }, { status: 401 })
-  }
-
-  // 3. Sukses: ambil token dari respons (sesuaikan kalau struktur respons API kamu beda)
-  const token = data.token || data.access_token || data.data?.token || 'logged-in'
-
-  const response = NextResponse.json({ message: 'Berhasil login' })
-  response.cookies.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    maxAge: 60 * 60 * 24, // 1 hari
-  })
-  return response
 }

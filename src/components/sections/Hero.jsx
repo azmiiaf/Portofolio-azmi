@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import { gsap, ScrollTrigger, useGSAP } from '../../lib/gsap'
-import { site } from '../../data/content'
+import { usePortfolio } from '../../context/PortfolioContext'
 import { useIntro } from '../../components/layout/Intro'
 import SplitChars from '../../components/ui/SplitChars'
 import Button from '../../components/ui/Button'
@@ -10,6 +10,7 @@ import SafeImage from '../../components/ui/SafeImage'
 import FloatingShapes from '../../components/ui/FloatingShapes'
 
 export default function Hero() {
+  const { site } = usePortfolio()
   const ready = useIntro()
   const root = useRef(null)
   const intro = useRef(null)
@@ -53,14 +54,14 @@ export default function Hero() {
             {site.location}
           </p>
           <h1 className="text-[clamp(2.25rem,12vw,4rem)] font-bold leading-[0.95] md:text-[clamp(4rem,10vw,7rem)] lg:text-[clamp(3rem,6vw,5.5rem)] font-devanagri">
-            {site.lines.map((line) => (
-              <span key={line} className="block"><SplitChars text={line} /></span>
+            {(site?.lines || ['M. AZMI', 'AL FADILLAH']).map((line) => (
+              <span key={line} className="block whitespace-nowrap"><SplitChars text={line} /></span>
             ))}
           </h1>
-          <p className="h-role mt-6 font-mono text-base text-lime sm:text-xl md:mt-8 md:text-2xl">{site.role}</p>
-          <p className="h-desc mt-5 max-w-md text-base text-white/85 sm:text-lg">{site.statement}</p>
+          <p className="h-role mt-6 font-mono text-base text-lime sm:text-xl md:mt-8 md:text-2xl">{site?.role}</p>
+          <p className="h-desc mt-5 max-w-md text-base text-white/85 sm:text-lg">{site?.statement}</p>
           <div className="mt-8 flex flex-wrap gap-3 sm:mt-10 sm:gap-4">
-            <a href={ site.cv} target='_blank'><Button className="h-btn" variant="violet">Unduh CV ↓</Button></a>
+            <a href={site?.cv} target='_blank'><Button className="h-btn" variant="violet">Unduh CV ↓</Button></a>
             <Button className="h-btn" href="#proyek">Lihat Proyek ↓</Button>
           </div>
         </div>
@@ -68,22 +69,20 @@ export default function Hero() {
         <div className="h-visual relative mx-auto aspect-[4/5] w-full max-w-[280px] sm:max-w-[340px] md:max-w-[400px]">
           <TiltCard className="h-full w-full">
             <div className="h-card h-full w-full overflow-hidden rounded-3xl border border-white/15 bg-[#111]">
-              {/* <SafeImage src={site.heroImage} alt={site.name} className="h-full w-full" />*/}
               <video 
                 autoPlay 
                 loop 
                 muted 
                 playsInline 
                 className={`background-video h-full w-full object-cover`}
-                onError={() => setFailed(true)}
               >
-                <source src={site.heroImage} type="video/mp4" />
+                <source src={site?.heroImage || '/images/hero1.mp4'} type="video/mp4" />
                 Browser kamu tidak mendukung pemutaran video.
               </video>
             </div>
           </TiltCard>
           <div className="h-badge absolute -left-3 bottom-8 rounded-2xl bg-lime px-4 py-2 font-mono text-xs font-bold sm:-left-6 sm:bottom-10 sm:px-5 sm:py-3 sm:text-sm text-ink shadow-xl">
-            {site.label.map((l) => <p key={l}>{l}</p>)}
+            {(site?.label || ['Terbuka untuk magang', 'dan entry-level']).map((l) => <p key={l}>{l}</p>)}
           </div>
           <FloatingShapes />
         </div>

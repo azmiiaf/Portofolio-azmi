@@ -1,8 +1,7 @@
 'use client'
-import { useRef } from 'react'
+import React, { useRef } from 'react'
 import { gsap, useGSAP } from '../../lib/gsap'
 
-// Keadaan awal & akhir tiap jenis animasi
 const FROM = {
   up: { y: 70, opacity: 0 },
   left: { x: -100, opacity: 0 },
@@ -20,20 +19,38 @@ const TO = {
   rotate: { y: 0, rotate: 0, opacity: 1 },
 }
 
-// Bungkus apa saja. Masuk saat scroll turun, balik lagi saat scroll naik.
-// stagger = true -> anak-anaknya muncul satu per satu.
 export default function Reveal({ children, type = 'up', stagger = false, as: Tag = 'div', className = '' }) {
   const ref = useRef(null)
 
-  useGSAP(() => {
-    gsap.fromTo(stagger ? ref.current.children : ref.current, FROM[type], {
-      ...TO[type],
-      duration: 1,
-      ease: 'power4.out',
-      stagger: stagger ? 0.1 : 0,
-      scrollTrigger: { trigger: ref.current, start: 'top 88%', toggleActions: 'play reverse play reverse' },
-    })
-  }, { scope: ref })
+  useGSAP(
+    () => {
+      if (!ref.current) return
+      const targets = stagger ? Array.from(ref.current.children) : ref.current
+      if (stagger && (!targets || targets.length === 0)) return
 
-  return <Tag ref={ref} className={className}>{children}</Tag>
+      gsap.fromTo(targets, FROM[type], {
+        ...TO[type],
+        duration: 0.9,
+        ease: 'power3.out',
+        stagger: stagger ? 0.12 : 0,
+        scrollTrigger: {
+          trigger: ref.current,
+          start: 'top 85%',
+          toggleActions: 'play reverse play reverse',
+          invalidateOnRefresh: true,
+        },
+      })
+    },
+    {
+      scope: ref,
+      dependencies: [children, stagger, type],
+      revertOnUpdate: true,
+    }
+  )
+
+  return (
+    <Tag ref={ref} className={className}>
+      {children}
+    </Tag>
+  )
 }

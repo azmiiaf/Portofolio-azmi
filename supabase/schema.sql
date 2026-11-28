@@ -1,5 +1,6 @@
 -- ============================================================
--- Jalankan SQL ini di Supabase SQL Editor (project kamu)
+-- SUPABASE SCHEMA & SEED DATA LENGKAP
+-- Jalankan file ini di Supabase Dashboard > SQL Editor
 -- ============================================================
 
 -- Profil
@@ -11,6 +12,7 @@ create table if not exists profile (
   about text,
   skills text[] default '{}',
   photo_url text,
+  created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
 
@@ -21,7 +23,8 @@ create table if not exists education (
   major text not null,
   year_start int not null,
   year_end int,
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );
 
 -- Lisensi & Sertifikasi
@@ -31,7 +34,8 @@ create table if not exists certification (
   issuer text not null,
   year_start int not null,
   year_end int,
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );
 
 -- Projek
@@ -43,7 +47,8 @@ create table if not exists project (
   image_url text,
   link text,
   year int,
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );
 
 -- Experience
@@ -55,7 +60,8 @@ create table if not exists experience (
   year_start int not null,
   year_end int,
   description text,
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );
 
 -- Kontak
@@ -65,6 +71,7 @@ create table if not exists contact (
   github_url text,
   linkedin_url text,
   whatsapp text,
+  created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
 
@@ -82,14 +89,30 @@ create table if not exists visitor_log (
   visited_at timestamptz default now()
 );
 
--- Index untuk performa query logs
+-- Index visitor logs
 create index if not exists visitor_log_visited_at_idx on visitor_log (visited_at desc);
 create index if not exists visitor_log_path_idx on visitor_log (path);
 
--- ============================================================
--- Seed data awal dari content.js
--- ============================================================
+-- Nonaktifkan RLS agar dapat diakses oleh API server
+alter table if exists profile disable row level security;
+alter table if exists education disable row level security;
+alter table if exists certification disable row level security;
+alter table if exists project disable row level security;
+alter table if exists experience disable row level security;
+alter table if exists contact disable row level security;
+alter table if exists visitor_log disable row level security;
 
+-- Berikan izin akses ke anon dan authenticated
+grant usage on schema public to anon, authenticated, service_role;
+grant all on all tables in schema public to anon, authenticated, service_role;
+grant all on all sequences in schema public to anon, authenticated, service_role;
+grant all on all routines in schema public to anon, authenticated, service_role;
+
+alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
+alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
+alter default privileges in schema public grant all on routines to anon, authenticated, service_role;
+
+-- Seed data awal dari content.js
 insert into profile (name, role, short_desc, about, skills) values (
   'M. Azmi Al Fadillah',
   'Fullstack Developer | Frontend Developer',

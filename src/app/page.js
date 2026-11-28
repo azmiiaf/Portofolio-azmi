@@ -1,5 +1,6 @@
 'use client'
 import { useVisitorLog } from '@/hooks/useVisitorLog'
+import { PortfolioProvider } from '../context/PortfolioContext'
 import { IntroProvider } from '../components/layout/Intro'
 import ScrollProgress from '../components/layout/ScrollProgress'
 import Navbar from '../components/layout/Navbar'
@@ -20,21 +21,23 @@ function VisitorTracker() {
 
 export default function Home() {
   return (
-    <IntroProvider>
-      <VisitorTracker />
-      <ScrollProgress />
-      <Navbar />
-      <main>
-        <Hero />
-        <Services />
-        <Journey />
-        <Projects />
-        <About />
-        <Stack />
-        <Certificates />
-        <Motto />
-        <Contact />
-      </main>
-    </IntroProvider>
+    <PortfolioProvider>
+      <IntroProvider>
+        <VisitorTracker />
+        <ScrollProgress />
+        <Navbar />
+        <main>
+          <Hero />
+          <Services />
+          <Journey />
+          <Projects />
+          <About />
+          <Stack />
+          <Certificates />
+          <Motto />
+          <Contact />
+        </main>
+      </IntroProvider>
+    </PortfolioProvider>
   )
 }

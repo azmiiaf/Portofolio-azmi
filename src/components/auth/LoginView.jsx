@@ -1,10 +1,15 @@
 'use client'
 import { useRef } from 'react'
 import { gsap, useGSAP } from '../../lib/gsap'
-import { landing } from '../../data/content'
 import SplitChars from '../../components/ui/SplitChars'
 import FloatingShapes from '../../components/ui/FloatingShapes'
 import LoginForm from './LoginForm'
+
+const landing = {
+  lines: ['Portofolio', 'Azmi'],
+  description:
+    'Halaman portofolio ini hanya bisa dibuka setelah masuk. Silakan login untuk melihat proyek, perjalanan, dan sertifikasi saya.',
+}
 
 export default function LoginView() {
   const root = useRef(null)

@@ -1,18 +1,22 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { ADMIN_COOKIE } from '@/lib/auth'
 
-// Jangan catat visit dari admin path
-function isAdminVisit(path) {
-  return path.startsWith('/admin')
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'admin-secret-change-me'
+
+// Jangan catat visit dari admin path atau visitor yang sedang login sebagai admin
+function isAdminVisit(req, path) {
+  if (path.startsWith('/admin')) return true
+  const adminCookie = req.cookies.get(ADMIN_COOKIE)?.value
+  if (adminCookie === ADMIN_SECRET) return true
+  return false
 }
 
 function parseUserAgent(ua = '') {
-  // Device type
   let deviceType = 'Desktop'
   if (/Mobi|Android|iPhone|iPod/i.test(ua)) deviceType = 'Mobile'
   else if (/iPad|Tablet/i.test(ua)) deviceType = 'Tablet'
 
-  // OS
   let os = 'Unknown'
   if (/Windows NT/i.test(ua)) os = 'Windows'
   else if (/Mac OS X/i.test(ua)) os = 'MacOS'
@@ -20,7 +24,6 @@ function parseUserAgent(ua = '') {
   else if (/iPhone|iPad/i.test(ua)) os = 'iOS'
   else if (/Linux/i.test(ua)) os = 'Linux'
 
-  // Browser
   let browser = 'Unknown'
   if (/Edg\//i.test(ua)) browser = 'Edge'
   else if (/OPR\//i.test(ua)) browser = 'Opera'
@@ -37,8 +40,8 @@ export async function POST(req) {
     const body = await req.json()
     const { path, method = 'GET', referrer = '' } = body
 
-    if (isAdminVisit(path)) {
-      return NextResponse.json({ skipped: true })
+    if (isAdminVisit(req, path)) {
+      return NextResponse.json({ skipped: true, reason: 'Admin visit excluded' })
     }
 
     const ua = req.headers.get('user-agent') || ''

@@ -1,11 +1,12 @@
 'use client'
 import { useRef } from 'react'
 import { gsap, useGSAP } from '../../lib/gsap'
-import { experience } from '../../data/content'
+import { usePortfolio } from '../../context/PortfolioContext'
 import SectionTitle from '../../components/ui/SectionTitle'
 import TimelineItem from '../../components/cards/TimelineItem'
 
 export default function Journey() {
+  const { experience } = usePortfolio()
   const root = useRef(null)
 
   // garis timeline "tergambar" mengikuti scroll

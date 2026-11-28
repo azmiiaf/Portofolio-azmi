@@ -27,7 +27,8 @@ export default function LoginForm() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.message || 'Login gagal')
 
-      router.replace('/')
+      // Berhasil login -> langsung arahkan ke panel admin
+      router.replace('/admin')
       router.refresh()
     } catch (err) {
       setError(err.message)
@@ -39,12 +40,34 @@ export default function LoginForm() {
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
-      <Input label="Username" name="username" value={form.username} onChange={handleChange} autoComplete="username" required />
-      <Input label="Password" name="password" type="password" value={form.password} onChange={handleChange} autoComplete="current-password" required />
+      <Input
+        label="Email"
+        name="username"
+        type="email"
+        value={form.username}
+        onChange={handleChange}
+        autoComplete="email"
+        placeholder="nama@email.com"
+        required
+      />
+      <Input
+        label="Password"
+        name="password"
+        type="password"
+        value={form.password}
+        onChange={handleChange}
+        autoComplete="current-password"
+        placeholder="••••••••"
+        required
+      />
 
       {error && <p className="font-mono text-sm text-red-400">{error}</p>}
 
-      <button type="submit" disabled={loading} className="w-full rounded-full bg-lime py-4 font-mono font-bold text-ink transition-transform hover:scale-[1.02] disabled:opacity-60">
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full rounded-full bg-lime py-4 font-mono font-bold text-ink transition-transform hover:scale-[1.02] disabled:opacity-60 cursor-pointer"
+      >
         {loading ? 'Memproses...' : 'Masuk ↗'}
       </button>
     </form>

@@ -1,9 +1,9 @@
-// Admin login page - diakses manual via /admin
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function AdminLoginPage() {
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -17,7 +17,7 @@ export default function AdminLoginPage() {
     const res = await fetch('/api/admin/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ email, password }),
     })
 
     setLoading(false)
@@ -27,7 +27,7 @@ export default function AdminLoginPage() {
       router.refresh()
     } else {
       const data = await res.json()
-      setError(data.message || 'Password salah')
+      setError(data.message || 'Email atau password salah')
     }
   }
 
@@ -37,19 +37,30 @@ export default function AdminLoginPage() {
         <div className="mb-8">
           <span className="text-[10px] font-mono tracking-widest uppercase text-white/30">Admin Panel</span>
           <h1 className="text-2xl font-semibold text-white mt-2">Masuk</h1>
-          <p className="text-sm text-white/40 mt-1">Akses terbatas. Masukkan password admin.</p>
+          <p className="text-sm text-white/40 mt-1">Gunakan email & password Supabase atau password master.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
-            <label htmlFor="password" className="block text-sm text-white/60 mb-1.5">Password</label>
+            <label htmlFor="email" className="block text-sm text-white/60 mb-1.5">Email (Akun Supabase)</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-lime focus:border-transparent transition-colors"
+              placeholder="nama@email.com"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm text-white/60 mb-1.5">Password <span className="text-lime">*</span></label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
-              autoFocus
               className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-lime focus:border-transparent transition-colors"
               placeholder="••••••••"
             />

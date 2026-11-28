@@ -1,4 +1,5 @@
 'use client'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -20,10 +21,20 @@ const navItems = [
 export default function AdminSidebar() {
   const pathname = usePathname()
   const router = useRouter()
+  const [email, setEmail] = useState('azmigithub@gmail.com')
+
+  useEffect(() => {
+    // Ambil email dari cookie admin_email jika ada
+    const match = document.cookie.match(/(?:^|;\s*)admin_email=([^;]+)/)
+    if (match) {
+      setEmail(decodeURIComponent(match[1]))
+    }
+  }, [])
 
   async function handleLogout() {
     await fetch('/api/admin/logout', { method: 'POST' })
     router.push('/admin/login')
+    router.refresh()
   }
 
   return (
@@ -59,14 +70,14 @@ export default function AdminSidebar() {
       <div className="px-3 pb-5 border-t border-white/[0.06] pt-4 space-y-1">
         <Link
           href="/"
-          target="_blank"
+          target="_self"
           className="flex items-center gap-3 px-3 py-2.5 w-full rounded-md text-sm bg-lime text-black font-semibold hover:bg-lime/90 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime"
         >
-          <ExternalLink size={14} aria-hidden="true" />
+          <ExternalLink size={14} aria-hidden="true" target="_self"/>
           Panel Portofolio
         </Link>
         <div className="px-3 pt-3 pb-1">
-          <p className="text-[11px] text-white/25 truncate">azmigithub@gmail.com</p>
+          <p className="text-[11px] text-white/25 truncate" title={email}>{email}</p>
         </div>
         <button
           onClick={handleLogout}
